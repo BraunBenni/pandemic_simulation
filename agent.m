@@ -10,7 +10,9 @@ classdef agent
         function obj = agent(pos)
             %UNTITLED Construct an instance of this class
             %   Detailed explanation goes here
-            obj.position = pos;
+            if nargin ~= 0
+                obj.position = pos;
+            end
         end
 
         function outputArg = method1(obj,inputArg)
