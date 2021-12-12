@@ -1,7 +1,7 @@
 clear; clc; close all;
 
 %% Initialising agents with random positions in max_xy square
-n_agents = 10;
+n_agents = 40;
 max_xy = 10;
 agents = agent.empty(0,0);
 for i = n_agents:-1:1
@@ -9,10 +9,10 @@ for i = n_agents:-1:1
 end
 
 %% Infection
-infection_rate = 0.1; %starting infection rate
-n_infected_agents = infection_rate * n_agents;
+starting_infection_rate = 0.1; %starting infection rate
+starting_n_infected_agents = starting_infection_rate * n_agents;
 infections = 1;
-while infections <= n_infected_agents
+while infections <= starting_n_infected_agents
     index = randi([1,n_agents]);
     if agents(index).infected == 0 %not infected yet
         agents(index).infected = 1;
@@ -24,9 +24,11 @@ risk_of_infection = 0.2; %risk of infection if in contact with infected person
 infection_radius = 1;
 %% Simulation
 timestep = 0.1;
-vel_scaling = 2;
+vel_scaling = 3;
 steps = 100;
 step = 0;
+n_infected_agents = starting_n_infected_agents;
+infection_data = [];
 while step <= steps
     %Moving
     for i = 1:n_agents
@@ -49,6 +51,7 @@ while step <= steps
                     if abs(agents(i).position - agents(j).position) < infection_radius %Risk of infection
                         if (rand() < risk_of_infection)
                             agents(i).infected = 1;
+                            n_infected_agents = n_infected_agents + 1;
                         end
                     end
                 end
@@ -56,7 +59,8 @@ while step <= steps
         end
     end
     
-    %Plot
+    %Plot of agents
+    figure(1)
     hold on
     for i = 1:n_agents
         if agents(i).infected == 1
@@ -69,7 +73,16 @@ while step <= steps
     ylim([-0.3,max_xy + 0.3])
     hold off
 
+    %Plot for analytics
+    figure(2)
+    infection_data = [infection_data; n_infected_agents n_agents-n_infected_agents];
+    bar(infection_data,'stacked');
+    legend('infected','healthy')
+    
+
+    %Increase simulation step
     step = step + 1;
+    %Pause
     pause(0.1);
 end
 
