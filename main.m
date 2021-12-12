@@ -65,8 +65,8 @@ while step <= steps
             plot(agents(i).position(1), agents(i).position(2),'ko')
         end
     end
-    xlim([-0.3,10.3])
-    ylim([-0.3,10.3])
+    xlim([-0.3,max_xy + 0.3])
+    ylim([-0.3,max_xy + 0.3])
     hold off
 
     step = step + 1;
