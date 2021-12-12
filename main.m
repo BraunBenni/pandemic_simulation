@@ -8,6 +8,20 @@ for i = n_agents:-1:1
     agents(i).position = randi([0,max_xy],[2,1]);
 end
 
+%% Infection
+infection_rate = 0.1; %starting infection rate
+n_infected_agents = infection_rate * n_agents;
+infections = 1;
+while infections <= n_infected_agents
+    index = randi([1,n_agents]);
+    if agents(index).infected == 0 %not infected yet
+        agents(index).infected = 1;
+        infections = infections + 1;
+    end
+end
+
+
+
 %% Moving agents
 timestep = 0.1;
 vel_scaling = 2;
@@ -27,7 +41,11 @@ for j = 1:steps
     
     hold on
     for i = 1:n_agents
-        plot(agents(i).position(1), agents(i).position(2),'o')
+        if agents(i).infected == 1
+            plot(agents(i).position(1), agents(i).position(2),'ro')
+        else
+            plot(agents(i).position(1), agents(i).position(2),'ko')
+        end
     end
     xlim([-0.3,10.3])
     ylim([-0.3,10.3])
