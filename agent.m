@@ -5,6 +5,7 @@ classdef agent
     properties
         position
         infected = 0
+        quarantine  = 0
     end
 
     methods
