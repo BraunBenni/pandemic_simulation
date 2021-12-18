@@ -21,10 +21,10 @@ while infections <= starting_n_infected_agents
 end
 
 risk_of_infection = 0.2; %risk of infection if in contact with infected person
-infection_radius = 1;
+infection_radius = 0.3;
 
 %% Quarantine
-quarantine_prob = 0.8; %probability that infections get's detected and agent is put in quarantine
+quarantine_prob = 1; %probability that infections get's detected and agent is put in quarantine
 quarantine_pos = [100;100]; %position for quarantine area
 
 %% Simulation
@@ -59,14 +59,16 @@ while step <= steps
                         if (rand() < risk_of_infection)     %infection?
                             agents(i).infected = 1;
                             n_infected_agents = n_infected_agents + 1;
-                            if (rand() < quarantine_prob)    %quarantine?
-                                agents(i).quarantine = 1;
-                                agents(i).position = quarantine_pos;
-                            end
                         end
                     end
                 end
             end
+        else %agent already infected
+            if (rand() <= quarantine_prob && agents(i).quarantine ~=1)    %quarantine?
+                agents(i).quarantine = 1;
+                agents(i).position = quarantine_pos;
+            end
+
         end
     end
     
