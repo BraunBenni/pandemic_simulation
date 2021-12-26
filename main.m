@@ -1,17 +1,18 @@
 clear; clc; close all;
 %% Parameters
-n_agents = 100;
+n_agents = 10;
 starting_infection_rate = 0.01;  
 risk_of_infection = 0.1;
 infection_radius = 0.3;
 quarantine_prob = 0.7;
-live_visualisation = 1;
+live_visualisation = 0;
 max_xy = 10;
 
 %% Initialising agents with random positions in max_xy square
 agents = agent.empty(0,0);
 for i = n_agents:-1:1
     agents(i).position = randi([0,max_xy],[2,1]);
+    agents(i) = agents(i).savePos();
 end
 
 %% Infection
@@ -95,14 +96,15 @@ while step <= steps
     if live_visualisation == 1
         figure(2)
         bar(infection_data,'stacked');
-        legend('infected','healthy')
+        legend('infected','healthy');
+        %Pause
+        pause(0.1);
     end
 
 
     %Increase simulation step
     step = step + 1;
-    %Pause
-    pause(0.1);
+    
 end
 
 if live_visualisation ~= 1

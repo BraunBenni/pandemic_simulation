@@ -4,6 +4,7 @@ classdef agent
         position
         infected = 0
         quarantine  = 0
+        old_positions = []
     end
 
     methods
@@ -16,7 +17,10 @@ classdef agent
 
         function obj = move(obj, vel_scaling, max_xy, timestep)
             %Function to move agent in square
-            %   Makes sure, that agents doesn't leave it
+            %   Makes sure, that agents doesn't leave the square defined by
+            %   max_xy
+            %   Saves position in property old_positions
+            
             if obj.quarantine == 0
                 direction = randi(360);
                 vel = rand() * vel_scaling;
@@ -28,6 +32,13 @@ classdef agent
                 end
                 obj.position = move;
             end
+            %save position:
+            obj = obj.savePos();
+        end
+
+        function obj = savePos(obj)
+            %Function to save current position in old_position array
+            obj.old_positions = [obj.old_positions, obj.position];
         end
 
     end
