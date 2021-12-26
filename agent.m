@@ -1,6 +1,4 @@
 classdef agent
-    %UNTITLED Summary of this class goes here
-    %   Detailed explanation goes here
 
     properties
         position
@@ -16,10 +14,22 @@ classdef agent
             end
         end
 
-%         function outputArg = method1(obj,inputArg)
-%             %METHOD1 Summary of this method goes here
-%             %   Detailed explanation goes here
-%             outputArg = obj.Property1 + inputArg;
-%         end
+        function obj = move(obj, vel_scaling, max_xy, timestep)
+            %Function to move agent in square
+            %   Makes sure, that agents doesn't leave it
+            if obj.quarantine == 0
+                direction = randi(360);
+                vel = rand() * vel_scaling;
+                move = obj.position + timestep * vel * [cosd(direction);sind(direction)];
+                %check whether new position is in square
+                if (move(1) < 0 || move(1) > max_xy) || (move(2) < 0 || move(2) > max_xy)
+                    %outside square:
+                    move = obj.position; %don't perform move and generate new step in next timestep
+                end
+                obj.position = move;
+            end
+        end
+
     end
+
 end

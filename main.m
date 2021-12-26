@@ -5,11 +5,10 @@ starting_infection_rate = 0.01;
 risk_of_infection = 0.1;
 infection_radius = 0.3;
 quarantine_prob = 0.7;
-live_visualisation = 0;
+live_visualisation = 1;
 max_xy = 10;
 
 %% Initialising agents with random positions in max_xy square
-max_xy = 10;
 agents = agent.empty(0,0);
 for i = n_agents:-1:1
     agents(i).position = randi([0,max_xy],[2,1]);
@@ -48,17 +47,7 @@ infection_data = [];
 while step <= steps
     %Moving
     for i = 1:n_agents
-        if agents(i).quarantine == 0 %only move agents which are not in quarantine
-            direction = randi(360);
-            vel = rand() * vel_scaling;
-            move = agents(i).position + timestep * vel * [cosd(direction);sind(direction)]; %new position after move
-            %check whether new position is in square
-            if (move(1) < 0 || move(1) > 10) || (move(2) < 0 || move(2) > 10)
-                %outside square:
-                move = agents(i).position; %don't perform move and generate new step in next timestep
-            end
-            agents(i).position = move;
-        end
+        agents(i) = agents(i).move(vel_scaling, max_xy, timestep);
     end
 
     %Infection?
