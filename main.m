@@ -87,10 +87,8 @@ end
 
 %% Visualisation of precomputed data
 step = 1;
-clear_intervall = 3;
-iter_clear = 1;
 pos1 = [0.05 0.2 0.4 0.6];
-pos2 = [0.6 0.2 0.4 0.6];
+pos2 = [0.5 0.2 0.45 0.6];
 
 if live_visualisation == 1
     figure1 = subplot('Position',pos1);
@@ -108,14 +106,30 @@ if live_visualisation == 1
         subplot('Position',pos1)
         hold on
         for i = 1:n_agents
-            if agents(i).old_infection_status(step) == 1
-                if agents(i).old_quarantine_status(step) == 1
-                    plot(agents(i).old_positions(1,step), agents(i).old_positions(2,step), 'go') %infected person in qurantine --> green
-                else
-                    plot(agents(i).old_positions(1,step), agents(i).old_positions(2,step), 'ro') %infected person not in quarantine --> red
+            if step > 2
+                for j = 0:2 %plot current step as well as two steps before
+                    if agents(i).old_infection_status(step) == 1
+                        if agents(i).old_quarantine_status(step) == 1
+                            colour = 'go'; %infected person in qurantine --> green
+                        else
+                            colour = 'ro'; %infected person not in quarantine --> red
+                        end
+                    else
+                        colour = 'ko'; %not infected person --> black
+                    end
+                    plot(agents(i).old_positions(1,step-j), agents(i).old_positions(2,step-j), colour)
                 end
             else
-                plot(agents(i).old_positions(1,step), agents(i).old_positions(2,step), 'ko') %not infected person --> black
+                if agents(i).old_infection_status(step) == 1
+                    if agents(i).old_quarantine_status(step) == 1
+                        colour = 'go'; %infected person in qurantine --> green
+                    else
+                        colour = 'ro'; %infected person not in quarantine --> red
+                    end
+                else
+                    colour = 'ko'; %not infected person --> black
+                end
+                plot(agents(i).old_positions(1,step), agents(i).old_positions(2,step), colour)
             end
         end
         hold off
@@ -126,19 +140,18 @@ if live_visualisation == 1
         legend('infected','healthy');
 
         %Pause
-        pause(0.01)
+        pause(0.005)
 
         %increasing step
         step = step + 1;
-        iter_clear = iter_clear + 1;
-        if iter_clear == clear_intervall
-            subplot('Position', pos1)
-            clf reset
-            subplot('Position',pos1)
-            xlim([-0.3, max_xy + 0.3]);
-            ylim([-0.3, max_xy + 0.3]);
-            iter_clear = 0;
-        end
+
+        %clear plot of persons
+        subplot('Position', pos1)
+        clf reset
+        subplot('Position',pos1)
+        xlim([-0.3, max_xy + 0.3]);
+        ylim([-0.3, max_xy + 0.3]);
+        
     end
 end
 
