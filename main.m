@@ -3,8 +3,8 @@ clear; clc; close all;
 n_agents = 10;
 starting_infection_rate = 0.01;  
 risk_of_infection = 0.1;
-infection_radius = 0.3;
-quarantine_prob = 0.7;
+infection_radius = 0.7;
+quarantine_prob = 0.5;
 live_visualisation = 0;
 max_xy = 10;
 
@@ -30,12 +30,6 @@ end
 %% Quarantine
 quarantine_pos = [100;100]; %position for quarantine area
 
-%% Initialise visualisation figure
-if live_visualisation == 1
-    figure(1)
-    xlim([-0.3, max_xy + 0.3])
-    ylim([-0.3, max_xy + 0.3])
-end
 
 %% Simulation
 timestep = 0.1;
@@ -73,38 +67,16 @@ while step <= steps
                 agents(i).quarantine = 1;
                 agents(i).position = quarantine_pos;
             end
-
         end
+        agents(i) = agents(i).saveInfectionStatus();
+        agents(i) = agents(i).saveQuarantineStatus();
     end
     
-    %Plot of agents
-    if live_visualisation == 1
-        figure(1)
-        hold on
-        for i = 1:n_agents
-            if agents(i).infected == 1
-                plot(agents(i).position(1), agents(i).position(2),'ro')
-            else
-                plot(agents(i).position(1), agents(i).position(2),'ko')
-            end
-        end
-        hold off
-    end
-
-    %Plot for analytics
+    %Save analytics
     infection_data = [infection_data; n_infected_agents n_agents-n_infected_agents];
-    if live_visualisation == 1
-        figure(2)
-        bar(infection_data,'stacked');
-        legend('infected','healthy');
-        %Pause
-        pause(0.1);
-    end
-
 
     %Increase simulation step
     step = step + 1;
-    
 end
 
 if live_visualisation ~= 1
@@ -112,4 +84,14 @@ if live_visualisation ~= 1
     bar(infection_data,'stacked');
     legend('infected','healthy');
 end
+
+
+
+
+
+
+
+
+
+
 

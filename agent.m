@@ -5,6 +5,8 @@ classdef agent
         infected = 0
         quarantine  = 0
         old_positions = []
+        old_infection_status = []
+        old_quarantine_status = []
     end
 
     methods
@@ -39,6 +41,17 @@ classdef agent
         function obj = savePos(obj)
             %Function to save current position in old_position array
             obj.old_positions = [obj.old_positions, obj.position];
+        end
+
+        function obj = saveInfectionStatus(obj)
+            %Function to save current infection status in old_infections_status array
+            obj.old_infection_status = [obj.old_infection_status, obj.infected];
+            
+        end
+
+        function obj = saveQuarantineStatus(obj)
+            %Function to save current quarantine stauts in old_quarantine_status array
+            obj.old_quarantine_status = [obj.old_quarantine_status, obj.quarantine];
         end
 
     end
