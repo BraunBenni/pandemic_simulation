@@ -34,8 +34,6 @@ classdef agent
                 end
                 obj.position = move;
             end
-            %save position:
-            obj = obj.savePos();
         end
 
         function obj = savePos(obj)
