@@ -28,7 +28,7 @@ end
 
 
 %% Quarantine
-quarantine_pos = [100;100]; %position for quarantine area
+quarantine_pos = [max_xy * 100; max_xy * 100]; %position for quarantine area
 
 
 %% Simulation
@@ -56,7 +56,7 @@ while step <= steps
                             n_infected_agents = n_infected_agents + 1;
                             if (rand() < quarantine_prob)
                                 agents(i).quarantine = 1;
-                                agents(i).position = quarantine_pos;
+                                agents(i).position = quarantine_pos +  rand([2,1])*3;
                             end
                         end
                     end
@@ -65,11 +65,12 @@ while step <= steps
         else %agent already infected
             if (rand() <= quarantine_prob && agents(i).quarantine ~=1)    %quarantine?
                 agents(i).quarantine = 1;
-                agents(i).position = quarantine_pos;
+                agents(i).position = quarantine_pos + rand([2,1])*3;
             end
         end
         agents(i) = agents(i).saveInfectionStatus();
         agents(i) = agents(i).saveQuarantineStatus();
+        agents(i) = agents(i).savePos();
     end
     
     %Save analytics
@@ -87,15 +88,23 @@ end
 
 %% Visualisation of precomputed data
 step = 1;
-pos1 = [0.05 0.2 0.4 0.6];
-pos2 = [0.5 0.2 0.45 0.6];
+pos1 = [0.05 0.05 0.4 0.6];
+pos2 = [0.5 0.05 0.45 0.5];
+pos3 = [0.5 0.6 0.35 0.35];
 
 if live_visualisation == 1
+    
+    %Initialising figure for active agents
     figure1 = subplot('Position',pos1);
-    figure2 = subplot('Position',pos2);
-    figure1;
     xlim([-0.3, max_xy + 0.3]);
     ylim([-0.3, max_xy + 0.3]);
+
+
+    %Initialising figure for qurantine
+    subplot('Position',pos3)
+    title('Quarantine')
+    xlim([max_xy*100 - 0.3, max_xy*100 + 3.3])
+    ylim([max_xy*100 - 0.3, max_xy*100 + 3.3])
 
     %Pause
     pause(2) %to open up window
@@ -103,41 +112,50 @@ if live_visualisation == 1
     while step <= steps
         
         %Plot of persons
-        subplot('Position',pos1)
-        hold on
         for i = 1:n_agents
-            if step > 2
-                for j = 0:2 %plot current step as well as two steps before
-                    if agents(i).old_infection_status(step) == 1
-                        if agents(i).old_quarantine_status(step) == 1
-                            colour = 'go'; %infected person in qurantine --> green
-                        else
+            if agents(i).old_quarantine_status(step) == 0
+                if step > 2
+                    for j = 0:2 %plot current step as well as two steps before
+                        if agents(i).old_infection_status(step) == 1 && agents(i).old_quarantine_status(step) == 0
                             colour = 'ro'; %infected person not in quarantine --> red
+                        elseif agents(i).old_infection_status(step) == 0
+                            colour = 'ko'; %not infected person --> black
                         end
-                    else
-                        colour = 'ko'; %not infected person --> black
-                    end
-                    plot(agents(i).old_positions(1,step-j), agents(i).old_positions(2,step-j), colour)
-                end
-            else
-                if agents(i).old_infection_status(step) == 1
-                    if agents(i).old_quarantine_status(step) == 1
-                        colour = 'go'; %infected person in qurantine --> green
-                    else
-                        colour = 'ro'; %infected person not in quarantine --> red
+                        subplot('Position',pos1)
+                        hold on
+                        plot(agents(i).old_positions(1,step-j), agents(i).old_positions(2,step-j), colour)
+                        hold off
                     end
                 else
-                    colour = 'ko'; %not infected person --> black
+                    if agents(i).old_infection_status(step) == 1 && agents(i).old_quarantine_status(step) == 0
+                        colour = 'ro'; %infected person not in quarantine --> red
+                    elseif agents(i).old_infection_status(step) == 0
+                        colour = 'ko'; %not infected person --> black
+                    end
+                    subplot('Position',pos1)
+                    hold on
+                    plot(agents(i).old_positions(1,step), agents(i).old_positions(2,step), colour)
+                    hold off
                 end
-                plot(agents(i).old_positions(1,step), agents(i).old_positions(2,step), colour)
+            end
+
+            %Quarantine 
+            if agents(i).old_quarantine_status(step) == 1 && step > 1
+                if agents(i).old_quarantine_status(step-1) == 0 %only plot if first timestep in qurantine
+                    colour = 'go'; %infected person in qurantine --> green
+                    subplot('Position',pos3)
+                    hold on
+                    plot(agents(i).position(1), agents(i).position(2), colour)
+                    hold off
+                end
             end
         end
-        hold off
 
         %Plot of analytics
         subplot('Position',pos2)
         bar(infection_data(1:step,:),'stacked');
         legend('infected','healthy');
+
 
         %Pause
         pause(0.005)
@@ -146,11 +164,11 @@ if live_visualisation == 1
         step = step + 1;
 
         %clear plot of persons
-        subplot('Position', pos1)
-        clf reset
+        cla(figure1)
         subplot('Position',pos1)
         xlim([-0.3, max_xy + 0.3]);
         ylim([-0.3, max_xy + 0.3]);
+
         
     end
 end
