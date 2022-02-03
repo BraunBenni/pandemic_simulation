@@ -2,6 +2,7 @@ classdef agent
 
     properties
         position
+        previous_direction
         infected = 0
         quarantine  = 0
         old_positions = []
@@ -24,7 +25,12 @@ classdef agent
             %   Saves position in property old_positions
             
             if obj.quarantine == 0
-                direction = randi(360);
+                firststep = isempty(obj.previous_direction);
+                if rand()<0.3 && firststep~=1 % 30% probability to keep the direction
+                    direction = obj.previous_direction;
+                else 
+                    direction = randi(360);
+                end
                 vel = rand() * vel_scaling;
                 move = obj.position + timestep * vel * [cosd(direction);sind(direction)];
                 %check whether new position is in square
@@ -33,6 +39,7 @@ classdef agent
                     move = obj.position; %don't perform move and generate new step in next timestep
                 end
                 obj.position = move;
+                obj.previous_direction = direction; %save direction for next step
             end
         end
 
